@@ -1,6 +1,8 @@
 # plop (plop)
 
-An app that automatically detects the nearest bathrooms to you. You can change your current location and distance of the search. More features to come.
+Nobody wants to use dirty bathrooms. This is an app that automatically detects the nearest bathrooms to you and their ratings. You can change your current location and distance of the search.
+
+More features to come.
 
 ## Install the dependencies
 ```bash

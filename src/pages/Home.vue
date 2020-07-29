@@ -1,82 +1,80 @@
 <template>
   <q-page class="container">
-    <div class="column" style="width: 500px">
-      <div class="col-2 addressForm rounded-borders q-pa-sm">
-        <q-form @submit="onSubmit">
-          <q-input v-if="errorMessage" filled v-model="errorMessage" dense disable />
-          <q-input id="autocomplete" filled bottom-slots v-model="address" label="Enter address" dense>
-            <template v-slot:append>
-              <q-btn flat round color="primary" icon="place" @click="locate"/>
-            </template>
-          </q-input>
-            <div class="row">
-                <div>
-                    <q-btn label="Find Bathrooms" type="submit" color="primary" @click="findNearbyPlaces"/>
+    <div class="drawer">
+      <div class="column ">
+        <div class="col-2 addressForm rounded-borders q-pa-sm">
+          <q-form @submit="onSubmit">
+            <q-input v-if="errorMessage" filled v-model="errorMessage" dense disable />
+            <q-input for="autocomplete" filled bottom-slots v-model="address" label="Enter address" dense>
+              <template v-slot:append>
+                <q-btn flat round color="primary" icon="place" @click="locate"/>
+              </template>
+            </q-input>
+              <div class="row">
+                  <div>
+                      <q-btn label="Find Bathrooms" type="submit" color="primary" @click="findNearbyPlaces"/>
+                    </div>
+
+                  <q-space />
+
+                  <div>
+                    <q-select filled v-model="distance" :options="distanceDropdown" label="miles" dense class="milesDropdown"/>
                   </div>
-
-                <q-space />
-
-                <div>
-                  <q-select filled v-model="distance" :options="distanceDropdown" label="miles" dense class="milesDropdown"/>
                 </div>
-              </div>
-        </q-form>
-      </div>
-      
-      <div class="placesForm">
-        <div v-show="places" class="col-10 placesList rounded-borders q-pa-sm">
-          <q-list separator  class="item" v-for="(place, index) in places" :key="place.id" @click="goToMarker(index)">
-            <q-item clickable ripple>
-              <q-item-section>
-                <q-item-label class="header text-h6">{{ place.name }}
-                  <span class="text-caption" v-if="place.opening_hours.open_now" style="color:#00DB00;"> 
-                    Open
-                  </span>
-                  <span class="text-caption" v-else style="color:red;"> 
-                    Closed
-                  </span>
-
-                    </q-item-label>
-                  <q-item-label caption class="details">{{ place.vicinity }}</q-item-label>
-                  <q-item-label caption class="details">
-                    <q-rating
-                      v-model="place.rating"
-                      size="2em"
-                      :max="5"
-                      color="primary"
-                      disable>
-                      <template v-slot:tip-1>
-                        <q-tooltip>Dirty</q-tooltip>
-                      </template>
-                      <template v-slot:tip-2>
-                        <q-tooltip>Not Clean</q-tooltip>
-                      </template>
-                      <template v-slot:tip-3>
-                        <q-tooltip>Somewhat Clean</q-tooltip>
-                      </template>
-                      <template v-slot:tip-4>
-                        <q-tooltip>Clean</q-tooltip>
-                      </template>
-                      <template v-slot:tip-5>
-                        <q-tooltip>The Cleanest</q-tooltip>
-                      </template>
-                    </q-rating>({{ place.user_ratings_total }} reviews)
-                  </q-item-label>
-                </q-item-section>
-                
-              </q-item>
-            </q-list>
+          </q-form>
         </div>
+        
+        <div class="placesForm">
+          <div v-show="places" class="col-10 placesList rounded-borders q-pa-sm">
+            <q-list separator  class="item" v-for="(place, index) in places" :key="place.id" @click="goToMarker(index)">
+              <q-item clickable ripple>
+                <q-item-section>
+                  <q-item-label class="header text-h6">{{ place.name }}
+                    <span class="text-caption" v-if="place.opening_hours.open_now" style="color:#00DB00;"> 
+                      Open
+                    </span>
+                    <span class="text-caption" v-else style="color:red;"> 
+                      Closed
+                    </span>
+
+                      </q-item-label>
+                    <q-item-label caption class="details">{{ place.vicinity }}</q-item-label>
+                    <q-item-label caption class="details">
+                      <q-rating
+                        v-model="place.rating"
+                        size="2em"
+                        :max="5"
+                        color="primary"
+                        disable>
+                        <template v-slot:tip-1>
+                          <q-tooltip>Dirty</q-tooltip>
+                        </template>
+                        <template v-slot:tip-2>
+                          <q-tooltip>Not Clean</q-tooltip>
+                        </template>
+                        <template v-slot:tip-3>
+                          <q-tooltip>Somewhat Clean</q-tooltip>
+                        </template>
+                        <template v-slot:tip-4>
+                          <q-tooltip>Clean</q-tooltip>
+                        </template>
+                        <template v-slot:tip-5>
+                          <q-tooltip>The Cleanest</q-tooltip>
+                        </template>
+                      </q-rating>({{ place.user_ratings_total }} reviews)
+                    </q-item-label>
+                  </q-item-section>
+                  
+                </q-item>
+              </q-list>
+          </div>
       </div>
-      
-
-<div id="map">
-  
-  </div>   
     </div>
+    
       
+      <div id="map"/>   
+    </div>
   </q-page>
-
 </template>
 
 <script>
@@ -106,7 +104,8 @@ export default {
   },
   mounted() {
     this.locate();
-    let autocomplete = new google.maps.places.Autocomplete(this.$refs["autocomplete"], {
+    //autocompletes address field based on addresses near the user's lat lng
+    let autocomplete = new google.maps.places.Autocomplete(document.getElementById("autocomplete"), {
       bounds: new google.maps.LatLngBounds( 
         new google.maps.LatLng (this.lat, this.lng)
       )
@@ -251,11 +250,10 @@ export default {
 
 <style lang="scss">
 .addressForm {
-  width:500px;
   height:130px;
   background:white;
   border: 2px solid #cccccc;
-  z-index:1;
+  z-index:0;
 }
 
 .milesDropdown {
@@ -266,7 +264,7 @@ export default {
   width:500px;
   background:white;
   border: 2px solid #cccccc;
-  z-index:1;
+  z-index:0;
 }
 
 .placesList {
@@ -278,6 +276,9 @@ export default {
   background: #c8f9ff !important;
 }
 
+.drawer {
+  width:500px;
+}
 #map {
   position:absolute;
   top:0;
