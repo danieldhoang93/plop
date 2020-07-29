@@ -11,20 +11,96 @@
               </template>
             </q-input>
               <div class="row">
-                  <div>
-                      <q-btn label="Find Bathrooms" type="submit" color="primary" @click="findNearbyPlaces"/>
-                    </div>
-
-                  <q-space />
-
-                  <div>
-                    <q-select filled v-model="distance" :options="distanceDropdown" label="miles" dense class="milesDropdown"/>
+                <div>
+                    <q-btn label="Find Bathrooms" type="submit" color="primary" @click="findNearbyPlaces"/>
                   </div>
+
+                <q-space />
+
+                <div>
+                  <q-select filled v-model="distance" :options="distanceDropdown" label="miles" dense class="milesDropdown"/>
                 </div>
+              </div>
           </q-form>
         </div>
         
         <div class="placesForm">
+          <div class="row q-pa-sm">
+                  <div>
+                      <q-toggle v-model="menuState" label="Hide Results" />
+                    </div>
+
+                  <q-space />
+                  <div class="q-pr-sm">
+                    <q-btn-dropdown color="primary" label="Sort">
+                    <q-list>
+                      <q-item v-for="value in sortValues" :key="value" clickable v-close-popup @click="onItemClick">
+                        <q-item-section>
+                            <q-item-label>{{ value }}</q-item-label>
+                          </q-item-section>
+                      </q-item>
+                    </q-list>
+                  </q-btn-dropdown>
+                  </div>
+                  
+                  <div>
+                    <q-btn-dropdown color="primary" label="Filters">
+                      <q-list class="filterWindow">
+                        <q-item clickable v-close-popup @click="onItemClick">
+                          <div class="q-pa-md filterSlider" dense>
+                            <div>Rating</div>
+                            <q-slider
+                              v-model="ratingSlider"
+                              :min="0"
+                              :max="5"
+                              :step="1"
+                              snap
+                              label
+                              label-always
+                              color="purple"
+                            />
+                          </div>
+                        </q-item>
+
+                        <q-item clickable v-close-popup @click="onItemClick">
+                          <div class="q-pa-md filterSlider" dense>
+                            <div>Toilet Paper Ply</div>
+                            <q-slider
+                              v-model="plySlider"
+                              :min="1"
+                              :max="3"
+                              :step="1"
+                              snap
+                              label
+                              label-always
+                              color="accent"
+                            />
+                          </div>
+                        </q-item>
+
+                        <q-item clickable v-close-popup @click="onItemClick">
+                          <div class="q-pa-sm">
+                            <q-option-group
+                              v-model="group"
+                              :options="options"
+                              color="accent"
+                              type="toggle"
+                            />
+                          </div>
+                        </q-item>
+                      </q-list>
+                      <div class="row q-pa-sm">
+                        <q-space />
+                        <div class="q-pr-sm">
+                          <q-btn label="Reset" type="submit" color="primary" @click=""/>
+                        </div>
+                        <div>
+                          <q-btn label="Apply" type="submit" color="primary" @click=""/>
+                        </div>
+                      </div>
+                    </q-btn-dropdown>
+                  </div>
+                </div>
           <div v-show="places" class="col-10 placesList rounded-borders q-pa-sm">
             <q-list separator  class="item" v-for="(place, index) in places" :key="place.id" @click="goToMarker(index)">
               <q-item clickable ripple>
@@ -44,7 +120,7 @@
                         v-model="place.rating"
                         size="2em"
                         :max="5"
-                        color="primary"
+                        color="accent"
                         disable>
                         <template v-slot:tip-1>
                           <q-tooltip>Dirty</q-tooltip>
@@ -99,7 +175,26 @@ export default {
       type: 'restaurant',
       places: [],
       ratingModel:'',
-      markers:[]
+      markers:[],
+      menuState: false,
+      sortValues: ['Rating', 'Distance'],
+      ratingSlider:3,
+      plySlider:2,
+      group: [ 'op1' ],
+      options: [
+        {
+          label: 'Handicap Accessible',
+          value: '1'
+        },
+        {
+          label: 'Public Bathroom',
+          value: '2'
+        },
+        {
+          label: 'More Than 1 Person Allowed',
+          value: '3'
+        }
+      ]
     }
   },
   mounted() {
@@ -269,7 +364,7 @@ export default {
 
 .placesList {
   overflow:auto;
-  height:calc(100vh - 175px);
+  height:calc(100vh - 231px);
 }
 
 .selectedItem {
@@ -278,6 +373,15 @@ export default {
 
 .drawer {
   width:500px;
+}
+
+.filterWindow {
+  width:350px;
+}
+
+.filterSlider {
+  width:350px;
+  height:60px;
 }
 #map {
   position:absolute;
