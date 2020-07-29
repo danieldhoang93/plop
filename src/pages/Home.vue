@@ -3,7 +3,7 @@
     <div class="column" style="width: 500px">
       <div class="col-2 addressForm rounded-borders q-pa-sm">
         <q-form @submit="onSubmit">
-          <q-input v-if="isError" filled v-model="errorMessage" dense disable />
+          <q-input v-if="errorMessage" filled v-model="errorMessage" dense disable />
           <q-input id="autocomplete" filled bottom-slots v-model="address" label="Enter address" dense>
             <template v-slot:append>
               <q-btn flat round color="primary" icon="place" @click="locate"/>
